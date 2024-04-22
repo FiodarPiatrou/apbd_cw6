@@ -1,5 +1,5 @@
-using cw6.DTOs;
 using cw6.Models;
+using cw6.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 

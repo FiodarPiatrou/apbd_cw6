@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace cw6.DTOs;
+namespace cw6.Models.DTOs;
 
 public class AddAnimal
 {
