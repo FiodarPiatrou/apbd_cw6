@@ -24,7 +24,7 @@ public class AnimalsController : ControllerBase
         connection.Open();
         using SqlCommand command = new SqlCommand();
         command.Connection = connection;
-        command.CommandText = "SELECT * FROM Animal";
+        command.CommandText = "SELECT IdAnimal, Name, ISNULL(description,'') as Description,Category,Area FROM Animal";
         var reader = command.ExecuteReader();
 
         List<Animal> animals = new List<Animal>();
@@ -41,7 +41,7 @@ public class AnimalsController : ControllerBase
             {
                 IdAnimal = reader.GetInt32(idAnimalOrdinal),
                 Name = reader.GetString(nameOrdinal), 
-                //Description = reader.GetString(descriptionOrdinal),
+                Description = reader.GetString(descriptionOrdinal),
                 Category = reader.GetString(categoryOrdinal),
                 Area = reader.GetString(areaOrdinal)
             });
@@ -85,5 +85,18 @@ public class AnimalsController : ControllerBase
         return Ok();
         
 
+    }
+
+    [HttpDelete("{idAnimal}")]
+    public IActionResult DeleteAnimal(int idAnimal)
+    {
+        using SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("Default"));
+        connection.Open();
+        using SqlCommand command = new SqlCommand();
+        command.Connection = connection;
+        command.CommandText = "Delete Animal WHERE IdAnimal=@idAnimal" ;
+        command.Parameters.AddWithValue("@idAnimal", idAnimal);
+        command.ExecuteNonQuery();
+        return Ok();
     }
 }
