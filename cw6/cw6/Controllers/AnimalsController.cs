@@ -17,14 +17,15 @@ public class AnimalsController : ControllerBase
         _configuration = configuration;
     }
 
-    [HttpGet]
-    public IActionResult GetAnimals()
+    [HttpGet("&orderBy={columnName}")]
+    public IActionResult GetAnimals(String columnName)
     {
         using SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("Default"));
         connection.Open();
         using SqlCommand command = new SqlCommand();
         command.Connection = connection;
         command.CommandText = "SELECT IdAnimal, Name, ISNULL(description,'') as Description,Category,Area FROM Animal";
+        
         var reader = command.ExecuteReader();
 
         List<Animal> animals = new List<Animal>();
@@ -33,6 +34,7 @@ public class AnimalsController : ControllerBase
         int descriptionOrdinal = reader.GetOrdinal("Description");
         int categoryOrdinal = reader.GetOrdinal("Category");
         int areaOrdinal = reader.GetOrdinal("Area");
+        
 
         
         while (reader.Read())
@@ -45,6 +47,17 @@ public class AnimalsController : ControllerBase
                 Category = reader.GetString(categoryOrdinal),
                 Area = reader.GetString(areaOrdinal)
             });
+        }
+
+        switch (columnName.ToLower())
+        {
+            case "idanimal": animals = animals.OrderBy(a => a.IdAnimal).ToList(); break;
+            case "name": animals = animals.OrderBy(a => a.Name).ToList(); break;
+            case "description": animals = animals.OrderBy(a => a.Description).ToList();break;
+            case "category": animals = animals.OrderBy(a => a.Category).ToList(); break;
+            case "area": animals = animals.OrderBy(a => a.Area).ToList(); break;
+            default: return BadRequest("Incorrect column name");
+                       
         }
 
         return Ok(animals);
